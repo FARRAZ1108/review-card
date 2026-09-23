@@ -455,8 +455,9 @@
                 document.getElementById('successModal').classList.add('active');
 
             } catch (error) {
-                // Jika gagal: tampilkan alert(error.message)
-                alert(error.message || 'Terjadi kesalahan saat mengaktifkan kartu.');
+    console.log(error);
+    alert(JSON.stringify(error));
+}
             } finally {
                 submitBtn.disabled = false;
                 btnText.innerText = 'Aktifkan Kartu';
