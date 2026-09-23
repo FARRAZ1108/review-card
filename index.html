@@ -373,10 +373,10 @@
         const SUPABASE_URL = "https://nvvqyoyygqigngzmvttl.supabase.co";
         const SUPABASE_KEY = "sb_publishable_oofBTUDAJZKI48GkmdJDIA_7S2X8bbx";
 
-        const supabase = window.supabase.createClient(
-          SUPABASE_URL,
-          SUPABASE_KEY
-        );
+        const db = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 
         // Handle Auto Focus & Navigation for PIN Input Boxes
         const pinInputs = document.querySelectorAll('.pin-box');
@@ -436,7 +436,7 @@
 
             try {
                 // 2. Simpan ke tabel 'activations' di Supabase
-                const { data, error } = await supabase
+                const { data, error } = await db
                     .from('activations')
                     .insert([
                         {
