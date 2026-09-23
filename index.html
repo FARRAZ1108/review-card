@@ -8,6 +8,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Supabase JS Client Library via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
         :root {
             --bg-color: #f8fafc;
@@ -187,6 +191,13 @@
             transform: translateY(-1px);
         }
 
+        .btn-submit:disabled {
+            background-color: #94a3b8;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
         .btn-submit:active {
             transform: translateY(0);
         }
@@ -324,8 +335,8 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn-submit">
-                    <span>Aktifkan Kartu</span>
+                <button type="submit" id="submitBtn" class="btn-submit">
+                    <span id="btnText">Aktifkan Kartu</span>
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="5" y1="12" x2="19" y2="12"></line>
                         <polyline points="12 5 19 12 12 19"></polyline>
@@ -351,19 +362,27 @@
                     <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
             </div>
-            <h2 class="modal-title">Aktivasi Berhasil!</h2>
-            <p class="modal-text">Kartu review Anda telah aktif dan siap digunakan untuk menerima ulasan pelanggan.</p>
+            <h2 class="modal-title">Kartu Berhasil Diaktifkan!</h2>
+            <p class="modal-text">Data bisnis dan kartu review Anda telah berhasil terdaftar dan aktif.</p>
             <button class="btn-close" onclick="closeModal()">Selesai</button>
         </div>
     </div>
 
     <script>
-        // Handle Auto Focus for PIN Boxes
+        // Supabase Configuration
+        const SUPABASE_URL = "sb_publishable_oofBTUDAJZKI48GkmdJDIA_7S2X8bbx";
+        const SUPABASE_KEY = "ISI_PUBLISHABLE_KEY_SAYA";
+
+        const supabase = window.supabase.createClient(
+          SUPABASE_URL,
+          SUPABASE_KEY
+        );
+
+        // Handle Auto Focus & Navigation for PIN Input Boxes
         const pinInputs = document.querySelectorAll('.pin-box');
 
         pinInputs.forEach((input, index) => {
             input.addEventListener('input', (e) => {
-                // Ensure only numbers
                 input.value = input.value.replace(/[^0-9]/g, '');
 
                 if (input.value.length === 1) {
@@ -379,7 +398,6 @@
                 }
             });
 
-            // Prevent pasting multiple non-numeric chars
             input.addEventListener('paste', (e) => {
                 e.preventDefault();
                 const pastedData = e.clipboardData.getData('text').replace(/[^0-9]/g, '').slice(0, 4);
@@ -396,20 +414,53 @@
         });
 
         // Form Submission Logic
-        function handleActivation(event) {
+        async function handleActivation(event) {
             event.preventDefault();
             
+            const submitBtn = document.getElementById('submitBtn');
+            const btnText = document.getElementById('btnText');
             const businessName = document.getElementById('businessName').value;
+            
+            // 1. Ambil & Gabungkan 4 digit PIN
             let pin = '';
             pinInputs.forEach(input => pin += input.value);
 
             if (pin.length !== 4) {
-                alert('Silakan lengkapi 4 digit PIN Anda.');
+                alert('Silakan masukkan 4 digit PIN lengkap.');
                 return;
             }
 
-            // Show Success Modal
-            document.getElementById('successModal').classList.add('active');
+            // Indikator loading pada tombol
+            submitBtn.disabled = true;
+            btnText.innerText = 'Memproses...';
+
+            try {
+                // 2. Simpan ke tabel 'activations' di Supabase
+                const { data, error } = await supabase
+                    .from('activations')
+                    .insert([
+                        {
+                            business_name: businessName,
+                            pin: pin,
+                            created_at: new Date().toISOString()
+                        }
+                    ]);
+
+                if (error) {
+                    // Jika gagal, lemparkan error untuk ditangkap di catch
+                    throw error;
+                }
+
+                // Jika berhasil: tampilkan modal sukses
+                document.getElementById('successModal').classList.add('active');
+
+            } catch (error) {
+                // Jika gagal: tampilkan alert(error.message)
+                alert(error.message || 'Terjadi kesalahan saat mengaktifkan kartu.');
+            } finally {
+                submitBtn.disabled = false;
+                btnText.innerText = 'Aktifkan Kartu';
+            }
         }
 
         function closeModal() {
