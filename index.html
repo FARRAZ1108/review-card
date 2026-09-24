@@ -461,9 +461,10 @@ console.log("ERROR:", error);
                 // Jika berhasil: tampilkan modal sukses
                 document.getElementById('successModal').classList.add('active');
 
-            } catch (error) {
-    console.log(error);
-    alert(JSON.stringify(error));
+           catch (error) {
+    console.error("CATCH ERROR:", error);
+    alert(error.message || String(error));
+}
             } finally {
                 submitBtn.disabled = false;
                 btnText.innerText = 'Aktifkan Kartu';
