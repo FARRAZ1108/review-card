@@ -416,6 +416,29 @@
 const urlParams = new URLSearchParams(window.location.search);
 const cardId = urlParams.get('card');
 console.log("CARD ID:", cardId);
+        
+        async function checkCardStatus() {
+    if (!cardId) return;
+
+    const { data, error } = await db
+        .from('activations')
+        .select('*')
+        .eq('card_id', cardId)
+        .single();
+
+    if (error) {
+        console.log(error);
+        return;
+    }
+
+    console.log(data);
+
+    if (data.is_activated === true && data.review_url) {
+        window.location.href = data.review_url;
+    }
+}
+        checkCardStatus();
+        
         // Form Submission Logic
 async function handleActivation(event) {
     event.preventDefault();
