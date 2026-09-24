@@ -313,17 +313,16 @@
             </div>
 
             <form id="activationForm" onsubmit="handleActivation(event)">
-                <div class="form-group">
-                    <label class="label" for="businessName">Nama Bisnis</label>
-                    <input 
-                        type="text" 
-                        id="businessName" 
-                        class="input-text" 
-                        placeholder="Contoh: Kopi Kenangan Jaya" 
-                        required 
-                        autocomplete="off"
-                    >
-                </div>
+               <div class="form-group">
+    <label class="label" for="reviewUrl">Link Review Google</label>
+    <input
+        type="url"
+        id="reviewUrl"
+        class="input-text"
+        placeholder="Paste link review Google di sini"
+        required
+    >
+</div>
                 <div class="form-group">
     <label class="label" for="reviewUrl">Link Review Google</label>
     <input
@@ -432,7 +431,7 @@
             
             const submitBtn = document.getElementById('submitBtn');
             const btnText = document.getElementById('btnText');
-            const businessName = document.getElementById('businessName').value;
+            const reviewUrl = document.getElementById('reviewUrl').value;
             
             // 1. Ambil & Gabungkan 4 digit PIN
             let pin = '';
@@ -457,7 +456,6 @@ console.log("PIN:", pin);
                     .insert([
                         {
                             {
-    business_name: businessName,
     review_url: reviewUrl,
     pin: pin,
     created_at: new Date().toISOString()
