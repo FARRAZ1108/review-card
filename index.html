@@ -439,6 +439,9 @@
 
             try {
                 // 2. Simpan ke tabel 'activations' di Supabase
+                console.log("BUSINESS:", businessName);
+console.log("PIN:", pin);
+                
                 const { data, error } = await db
                     .from('activations')
                     .insert([
@@ -454,7 +457,11 @@ console.log("ERROR:", error);
 
                 if (error) {
                     // Jika gagal, lemparkan error untuk ditangkap di catch
-                    throw error;
+                   if(error){
+   console.log(error);
+   alert(JSON.stringify(error));
+   return;
+}
                 }
 
                 // Jika berhasil: tampilkan modal sukses
