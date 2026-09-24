@@ -415,62 +415,55 @@
         });
 
         // Form Submission Logic
-        async function handleActivation(event) {
-            event.preventDefault();
-            
-            const submitBtn = document.getElementById('submitBtn');
-            const btnText = document.getElementById('btnText');
-            const reviewUrl = document.getElementById('reviewUrl').value;
-            
-            // 1. Ambil & Gabungkan 4 digit PIN
-            let pin = '';
-            pinInputs.forEach(input => pin += input.value);
+async function handleActivation(event) {
+    event.preventDefault();
 
-            if (pin.length !== 4) {
-                alert('Silakan masukkan 4 digit PIN lengkap.');
-                return;
-            }
+    const submitBtn = document.getElementById('submitBtn');
+    const btnText = document.getElementById('btnText');
+    const reviewUrl = document.getElementById('reviewUrl').value;
 
-            // Indikator loading pada tombol
-            submitBtn.disabled = true;
-            btnText.innerText = 'Memproses...';
+    let pin = '';
+    pinInputs.forEach(input => pin += input.value);
 
-            try {
-                // 2. Simpan ke tabel 'activations' di Supabase
-                console.log("BUSINESS:", businessName);
-console.log("PIN:", pin);
-                
-              
-    const { data, error } = await db
-    .from('activations')
-    .insert([
-        {
-            review_url: reviewUrl,
-            pin: pin,
-            created_at: new Date().toISOString()
+    if (pin.length !== 4) {
+        alert('Silakan masukkan 4 digit PIN lengkap.');
+        return;
+    }
+
+    submitBtn.disabled = true;
+    btnText.innerText = 'Memproses...';
+
+    try {
+        const { data, error } = await db
+            .from('activations')
+            .insert([
+                {
+                    review_url: reviewUrl,
+                    pin: pin,
+                    created_at: new Date().toISOString()
+                }
+            ]);
+
+        console.log("DATA:", data);
+        console.log("ERROR:", error);
+
+        if (error) {
+            console.error(error);
+            alert(error.message);
+            return;
         }
-    ]);
-                console.log("DATA:", data);
-console.log("ERROR:", error);
 
-               if (error) 
-    console.error("SUPABASE ERROR:", error);
-    alert(error.message);
-    return;
+        document.getElementById('successModal').classList.add('active');
 
-                // Jika berhasil: tampilkan modal sukses
-                document.getElementById('successModal').classList.add('active');
+    } catch (error) {
+        console.error(error);
+        alert(error.message || String(error));
 
-           catch (error) {
-    console.error("CATCH ERROR:", error);
-    alert(error.message || String(error));
+    } finally {
+        submitBtn.disabled = false;
+        btnText.innerText = 'Aktifkan Kartu';
+    }
 }
-            } finally {
-                submitBtn.disabled = false;
-                btnText.innerText = 'Aktifkan Kartu';
-            }
-        }
-
         function closeModal() {
             document.getElementById('successModal').classList.remove('active');
             document.getElementById('activationForm').reset();
