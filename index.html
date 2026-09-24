@@ -413,7 +413,9 @@
                 pinInputs[focusIndex].focus();
             });
         });
-
+const urlParams = new URLSearchParams(window.location.search);
+const cardId = urlParams.get('card');
+console.log("CARD ID:", cardId);
         // Form Submission Logic
 async function handleActivation(event) {
     event.preventDefault();
