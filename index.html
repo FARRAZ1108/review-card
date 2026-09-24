@@ -437,14 +437,13 @@ async function handleActivation(event) {
 
     try {
         const { data, error } = await db
-            .from('activations')
-            .insert([
-                {
-                    review_url: reviewUrl,
-                    pin: pin,
-                    created_at: new Date().toISOString()
-                }
-            ]);
+    .from('activations')
+    .update({
+        review_url: reviewUrl,
+        pin: pin,
+        is_activated: true
+    })
+    .eq('card_id', cardId);
 
         console.log("DATA:", data);
         console.log("ERROR:", error);
